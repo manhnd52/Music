@@ -2,11 +2,13 @@ package com.example.music
 
 import android.app.Service
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.IBinder
 
 class MusicService : Service() {
     private lateinit var model: MusicPlayerModel
-    private lateinit var presenter: MusicPlayerContract.Presenter
+    private var mediaPlayer: MediaPlayer? = null
+
     override fun onCreate() {
         super.onCreate()
         model = MusicList(this)

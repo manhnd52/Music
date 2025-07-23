@@ -44,9 +44,9 @@ class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
     }
 
     override fun updateNotification(song: Song, isPlaying: Boolean) {
-//        val intent = Intent(this, MusicService::class.java)
-//        intent.action = if (isPlaying) MusicService.ACTION_PLAY else MusicService.ACTION_PAUSE
-//        startService(intent)
+        val intent = Intent(this, MusicService::class.java)
+        intent.action = if (isPlaying) MusicService.ACTION_PLAY else MusicService.ACTION_PAUSE
+        startService(intent)
     }
 
     override fun bindEvents(presenter: MusicPlayerContract.Presenter) {

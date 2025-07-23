@@ -8,7 +8,6 @@ import android.os.IBinder
 class MusicService : Service() {
     private lateinit var model: MusicPlayerModel
     private var mediaPlayer: MediaPlayer? = null
-
     override fun onCreate() {
         super.onCreate()
         model = MusicList(this)
@@ -16,10 +15,37 @@ class MusicService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_PLAY -> model.getCurrentSong()?.let { model.play(it); notify(it, true) }
-            ACTION_PAUSE -> model.getCurrentSong()?.let { model.pause(); notify(it, false) }
-            ACTION_NEXT -> { model.next(); model.getCurrentSong()?.let { notify(it, true) } }
-            ACTION_PREV -> { model.previous(); model.getCurrentSong()?.let { notify(it, true) } }
+            ACTION_PLAY -> {
+                val song = model.getCurrentSong() ?: return START_NOT_STICKY
+                if (mediaPlayer == null) {
+                    mediaPlayer = MediaPlayer.create(this, song.resourceId)
+                }
+                mediaPlayer?.start()
+                model.play(song)
+                notify(song, true)
+            }
+            ACTION_PAUSE -> {
+                mediaPlayer?.pause()
+                model.getCurrentSong()?.let { notify(it, false) }
+            }
+            ACTION_NEXT -> {
+                model.next()
+                model.getCurrentSong()?.let {
+                    mediaPlayer?.reset()
+                    mediaPlayer = MediaPlayer.create(this, it.resourceId)
+                    mediaPlayer?.start()
+                    notify(it, true)
+                }
+            }
+            ACTION_PREV -> {
+                model.previous()
+                model.getCurrentSong()?.let {
+                    mediaPlayer?.reset()
+                    mediaPlayer = MediaPlayer.create(this, it.resourceId)
+                    mediaPlayer?.start()
+                    notify(it, true)
+                }
+            }
         }
         return START_STICKY
     }
@@ -30,6 +56,12 @@ class MusicService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
 
     companion object {
         const val ACTION_PLAY = "ACTION_PLAY"

@@ -11,12 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 class SongAdapter(
     private val onItemClick: (Song) -> Unit
 ) : ListAdapter<Song, SongAdapter.SongViewHolder>(object : DiffUtil.ItemCallback<Song>() {
-    override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean = oldItem.title == newItem.title
+    override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean =
+        oldItem.title == newItem.title
+
     override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean = oldItem == newItem
 }) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_2, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(android.R.layout.simple_list_item_2, parent, false)
         return SongViewHolder(view)
     }
 

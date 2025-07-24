@@ -10,7 +10,7 @@ import androidx.core.app.NotificationCompat
 object NotificationHelper {
     fun createNotification(context: Context, song: Song, isPlaying: Boolean): Notification {
         val playIntent = Intent(context, MusicService::class.java).apply {
-            action = if (isPlaying) MusicService.ACTION_PAUSE else MusicService.ACTION_PLAY
+            action = if (isPlaying) MusicService.ACTION_PAUSE else MusicService.ACTION_RESUME
         }
         val playPendingIntent = PendingIntent.getService(context, 0, playIntent, PendingIntent.FLAG_IMMUTABLE)
 

@@ -1,5 +1,7 @@
 [versions]
 agp = "8.11.1"
+coreAnimation = "1.0.0"
+coreRole = "1.1.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -12,7 +14,10 @@ constraintlayout = "2.2.1"
 media = "1.7.0"
 
 [libraries]
+androidx-core-animation = { module = "androidx.core:core-animation", version.ref = "coreAnimation" }
+androidx-core-animation-testing = { module = "androidx.core:core-animation-testing", version.ref = "coreAnimation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-role = { module = "androidx.core:core-role", version.ref = "coreRole" }
 androidx-media = { module = "androidx.media:media", version.ref = "media" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

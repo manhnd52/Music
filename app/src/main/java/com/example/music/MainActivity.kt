@@ -1,10 +1,17 @@
 package com.example.music
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,12 +19,23 @@ import androidx.recyclerview.widget.RecyclerView
 class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
     private lateinit var presenter: MusicPlayerPresenter
     private lateinit var adapter: SongAdapter
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.v("MyTag", "onReceive Broadcast")
+            if (intent?.action == "ACTION_UPDATE_UI") {
+                val status = intent.getStringExtra("status")
+                Log.v("MyTag", "RECEIVED $status")
+            }
+        }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        registerReceiver(receiver, IntentFilter("ACTION_UPDATE_UI"), RECEIVER_EXPORTED)
         setContentView(R.layout.activity_main)
 
-        presenter = MusicPlayerPresenter(this, MusicList(this))
+        presenter = MusicPlayerPresenter(this, MusicList())
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewSongs)
         adapter = SongAdapter { presenter.onSongSelected(it) }
@@ -28,6 +46,10 @@ class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
         presenter.onViewReady()
     }
 
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(receiver)
+    }
     override fun showSongs(songs: List<Song>) {
         adapter.submitList(songs)
     }
@@ -44,8 +66,11 @@ class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
     }
 
     override fun updateNotification(song: Song, isPlaying: Boolean) {
-        val intent = Intent(this, MusicService::class.java)
-        intent.action = if (isPlaying) MusicService.ACTION_PLAY else MusicService.ACTION_PAUSE
+        Log.v("MyTag", "${song.title} is ${if (isPlaying) "playing" else "pausing"}!")
+        val intent = Intent(this, MusicService::class.java).apply {
+            action = if (isPlaying) MusicService.ACTION_PLAY else MusicService.ACTION_PAUSE
+            putExtra(MusicService.SONG_DATA, song)
+        }
         startService(intent)
     }
 

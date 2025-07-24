@@ -1,14 +1,12 @@
 package com.example.music
 
-import android.content.Context
-import android.media.MediaPlayer
-
 class MusicList() : MusicPlayerModel {
     private val songList = listOf(
         Song("Chú voi con ở bản Đôn", "ABC", R.raw.chu_voi_con),
         Song("Bắc Kim Thang", "Bé Bào Ngư", R.raw.bac_kim_thang),
         Song("Cả Nhà Thương Nhau", "Bé Bào Ngư", R.raw.ca_nha_thuong_nhau)
     )
+
     private var currentIndex = 0
     private var isPlaying = false
 

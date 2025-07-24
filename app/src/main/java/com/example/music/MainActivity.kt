@@ -1,6 +1,5 @@
 package com.example.music
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,16 +14,22 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.music.MusicService.Companion.ACTION_NEXT
+import com.example.music.MusicService.Companion.ACTION_PREV
 
 class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
     private lateinit var presenter: MusicPlayerPresenter
     private lateinit var adapter: SongAdapter
+
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.v("MyTag", "onReceive Broadcast")
-            if (intent?.action == "ACTION_UPDATE_UI") {
+            if (intent?.action == "UPDATE_UI") {
                 val status = intent.getStringExtra("status")
-                Log.v("MyTag", "RECEIVED $status")
+                when (status) {
+                    ACTION_NEXT -> presenter.onNextClicked()
+                    ACTION_PREV -> presenter.onPreviousClicked()
+                }
             }
         }
     }
@@ -32,7 +37,9 @@ class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        registerReceiver(receiver, IntentFilter("ACTION_UPDATE_UI"), RECEIVER_EXPORTED)
+
+        registerReceiver(receiver, IntentFilter("UPDATE_UI"), RECEIVER_EXPORTED)
+
         setContentView(R.layout.activity_main)
 
         presenter = MusicPlayerPresenter(this, MusicList())
@@ -48,7 +55,7 @@ class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
 
     override fun onStop() {
         super.onStop()
-        unregisterReceiver(receiver)
+        Log.v("MyTag", "mainActivity onStop")
     }
     override fun showSongs(songs: List<Song>) {
         adapter.submitList(songs)

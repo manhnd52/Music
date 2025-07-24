@@ -34,14 +34,14 @@ class MusicService : Service() {
                 notify(currentSong, false)
             }
             ACTION_PREV -> {
-                val updateIntent = Intent("ACTION_UPDATE_UI").apply {
-                    putExtra("status", "playing")
+                val updateIntent = Intent("UPDATE_UI").apply {
+                    putExtra("status", ACTION_PREV)
                 }
                 sendBroadcast(updateIntent)
             }
             ACTION_NEXT -> {
-                val updateIntent = Intent("ACTION_UPDATE_UI").apply {
-                    putExtra("status", "playing")
+                val updateIntent = Intent("UPDATE_UI").apply {
+                    putExtra("status", ACTION_NEXT)
                 }
                 sendBroadcast(updateIntent)
             }

@@ -47,6 +47,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.media)
     testImplementation(libs.junit)
+    testImplementation("org.mockito:mockito-core:4.6.1")
+    testImplementation("org.mockito:mockito-inline:4.6.1")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

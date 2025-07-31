@@ -7,6 +7,8 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,6 +22,7 @@ import com.example.music.MusicService.Companion.ACTION_PREV
 class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
     private lateinit var presenter: MusicPlayerPresenter
     private lateinit var adapter: SongAdapter
+    private lateinit var loginPresenter: LoginPresenter
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -37,6 +40,22 @@ class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check login status
+        loginPresenter = LoginPresenter(object : LoginContract.View {
+            override fun showLoginSuccess() {}
+            override fun showLoginError(message: String) {}
+            override fun showLoading(isLoading: Boolean) {}
+            override fun navigateToMainActivity() {}
+        }, this)
+
+        // If not logged in, redirect to login
+        if (!loginPresenter.isLoggedIn()) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
 
         registerReceiver(receiver, IntentFilter("UPDATE_UI"), RECEIVER_EXPORTED)
 
@@ -90,6 +109,24 @@ class MainActivity : AppCompatActivity(), MusicPlayerContract.View {
         }
         findViewById<ImageButton>(R.id.btnPrev).setOnClickListener {
             presenter.onPreviousClicked()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                loginPresenter.logout()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }
